@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         pixiv 收藏排序
 // @namespace    dsh.pixiv.sort
-// @version      1.0.0
-// @description  pixiv 标签搜索页按收藏数/点击量重排结果，支持 R-18/AI 筛选、阈值过滤、页码范围、一键保存原图
+// @version      1.0.1
+// @description  pixiv 标签搜索页按收藏数/浏览量重排结果，支持 R-18/AI 筛选、阈值过滤、页码范围、一键保存原图
 // @match        https://www.pixiv.net/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
@@ -92,7 +92,7 @@
       ? '第 ' + cfg.pageFrom + ' 页'
       : '第 ' + cfg.pageFrom + '–' + cfg.pageTo + ' 页';
   }
-  const sortName = k => (k === 'view' ? '点击量' : '收藏数');
+  const sortName = k => (k === 'view' ? '浏览量' : '收藏数');
 
   function currentKeyword() {
     const m = location.pathname.match(/^\/tags\/([^/]+)/);
@@ -357,10 +357,10 @@
   const root = document.createElement('div');
   root.id = 'pxs-root';
   root.innerHTML = '<style>' + CSS + '</style>' +
-    '<button id="pxs-fab">收藏排序</button>' +
+    '<button id="pxs-fab">收藏/浏览排序</button>' +
     '<section id="pxs-panel" hidden>' +
       '<header id="pxs-head">' +
-        '<span class="pxs-brand">PIXIV · 收藏排序</span>' +
+        '<span class="pxs-brand">PIXIV · 收藏/浏览排序</span>' +
         '<span id="pxs-kw">—</span>' +
         '<span class="pxs-grow"></span>' +
         '<button id="pxs-run" class="pxs-btn pxs-btn-primary">开始抓取</button>' +
@@ -384,7 +384,7 @@
           '<ol>' +
             '<li>在标签搜索页打开（如 <code>/tags/初音ミク/artworks</code>），点右下角「收藏排序」。</li>' +
             '<li>点「开始抓取」：按当前 R-18 / AI 筛选与页码范围取结果，页数越多等待越久。</li>' +
-            '<li>「设置 → 排序依据」切换收藏数 / 点击量，切换即时重排，不重新请求。</li>' +
+            '<li>「设置 → 排序依据」切换收藏数 / 浏览量，切换即时重排，不重新请求。</li>' +
             '<li>若角标全是 0，说明接口没返回数值：点状态栏右侧「补全数据」，逐条补一次（缓存 7 天）。</li>' +
             '<li>下载原图：鼠标悬停缩略图，点「⬇ 原图」；多页作品会先让你选 p0…pN。</li>' +
             '<li>要存到固定文件夹：设置 → 指定文件夹 → 选择文件夹（Chrome 重启后需点一次「重新授权」）。</li>' +
@@ -394,7 +394,7 @@
           '<span>排序依据</span>' +
           '<span class="pxs-seg">' +
             '<button id="pxs-sort-b" data-on="1" type="button">收藏数</button>' +
-            '<button id="pxs-sort-v" data-on="0" type="button">点击量</button>' +
+            '<button id="pxs-sort-v" data-on="0" type="button">浏览量</button>' +
           '</span>' +
           '<span class="pxs-hint">切换后立即重排，不重新抓取</span>' +
         '</div>' +
@@ -402,7 +402,7 @@
           '<label><input id="pxs-min-on" type="checkbox"> 只显示达到阈值</label>' +
           '<select id="pxs-min-key" class="pxs-sel">' +
             '<option value="bookmark">收藏数</option>' +
-            '<option value="view">点击量</option>' +
+            '<option value="view">浏览量</option>' +
           '</select>' +
           '<span>≥</span>' +
           '<input id="pxs-min-val" class="pxs-num pxs-num-wide" type="number" min="0" step="100" value="0">' +
@@ -606,7 +606,7 @@
     if (!state.items.length) return;
     const list = state.items.slice();
     const eta = Math.ceil(list.length * cfg.interval / 1000);
-    if (!confirm('将逐个请求 ' + list.length + ' 个作品详情（一次拿到收藏数与点击量），间隔随机在 ' + rangeText() + '。\n预计约 ' + eta + ' 秒，继续？')) return;
+    if (!confirm('将逐个请求 ' + list.length + ' 个作品详情（一次拿到收藏数与浏览量），间隔随机在 ' + rangeText() + '。\n预计约 ' + eta + ' 秒，继续？')) return;
 
     state.running = true;
     el.fill.disabled = true;
@@ -639,7 +639,7 @@
 
       const okB = list.filter(it => it.__b > 0).length;
       const okV = list.filter(it => it.__v > 0).length;
-      log('补全完成：收藏数 ' + okB + '/' + list.length + '，点击量 ' + okV + '/' + list.length);
+      log('补全完成：收藏数 ' + okB + '/' + list.length + '，浏览量 ' + okV + '/' + list.length);
 
       state.page = 1;
       rebuild();
@@ -952,9 +952,9 @@
     if (maxMetric('view') === 0) {
       el.fill.hidden = false;
       el.fill.textContent = '补全数据（' + state.items.length + ' 次请求）';
-      setStatus('缺少点击量数据，点「补全数据」后才能按点击量排序');
+      setStatus('缺少浏览量数据，点「补全数据」后才能按浏览量排序');
     } else {
-      setStatus('已改为按点击量 · ' + state.shown.length + '/' + state.items.length + ' 条');
+      setStatus('已改为按浏览量 · ' + state.shown.length + '/' + state.items.length + ' 条');
     }
   });
 
@@ -1103,6 +1103,6 @@
   }, 700);
 
   syncKeyword();
-  log('v1.0.0 已加载 · 关键词：' + (currentKeyword() || '(无)') + ' · ' + pageText() + ' · ' + filterText());
+  log('v1.0.1 已加载 · 关键词：' + (currentKeyword() || '(无)') + ' · ' + pageText() + ' · ' + filterText());
   log('首次使用：设置 → 使用指引；缺数值时点「补全数据」。');
 })();
