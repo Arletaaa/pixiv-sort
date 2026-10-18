@@ -90,8 +90,33 @@ https://cdn.jsdelivr.net/gh/Arletaaa/pixiv-sort@main/pixiv-sort.user.js
 个人学习与浏览用途。不提供绕过风控、批量抓取、代抢等功能。
 请遵守 pixiv 使用条款，账号风险自负。与 pixiv 官方无关。
 
+## 维护者：发布新版本
+
+发布一个版本只需要六步，其中第 4 步是关键——**不清 jsDelivr 缓存，用户可能 12 小时都收不到更新**。
+
+```powershell
+# 1. 改代码，并把 @version 往上加（例如 1.0.3）
+# 2. 提交
+git add -A
+git commit -m "v1.0.3: ..."
+# 3. 推送
+git push origin main
+```
+
+4. 清缓存：浏览器打开
+   `https://purge.jsdelivr.net/gh/Arletaaa/pixiv-sort@main/pixiv-sort.user.js`
+5. （可选）打 tag 并在 GitHub 上建 Release，作为版本锚点：
+   ```powershell
+   git tag -a 1.0.3 -m "1.0.3"
+   git push origin 1.0.3
+   ```
+6. 验证：打开安装地址，Tampermonkey 安装页应显示新版本号；已安装的用户可在面板里点「检查更新」。
+
+> 安装地址固定用 `@main`，才能自动跟随最新版。tag 只用来归档和回溯，不要写进安装地址——一旦写死 tag，脚本就再也不会自动更新了。
+
 ## 更新日志
 
+- **1.0.2** 增加 `@downloadURL` / `@updateURL`，更新检查走固定地址
 - **1.0.1** 术语统一为「收藏/浏览」，与仓库描述一致
 - **1.0.0** 正式版：收藏数/浏览量双向排序、阈值过滤、页码范围、下载计数、使用指引内嵌
 - 0.6.0 按浏览量排序、阈值过滤、补全数据合并为一次请求

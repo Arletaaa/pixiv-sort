@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         pixiv 收藏排序
 // @namespace    dsh.pixiv.sort
-// @version      1.0.1
+// @version      1.0.2
 // @description  pixiv 标签搜索页按收藏数/浏览量重排结果，支持 R-18/AI 筛选、阈值过滤、页码范围、一键保存原图
+// @downloadURL  https://cdn.jsdelivr.net/gh/Arletaaa/pixiv-sort@main/pixiv-sort.user.js
+// @updateURL    https://cdn.jsdelivr.net/gh/Arletaaa/pixiv-sort@main/pixiv-sort.user.js
 // @match        https://www.pixiv.net/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
@@ -1103,6 +1105,6 @@
   }, 700);
 
   syncKeyword();
-  log('v1.0.1 已加载 · 关键词：' + (currentKeyword() || '(无)') + ' · ' + pageText() + ' · ' + filterText());
+  log('v1.0.2 已加载 · 关键词：' + (currentKeyword() || '(无)') + ' · ' + pageText() + ' · ' + filterText());
   log('首次使用：设置 → 使用指引；缺数值时点「补全数据」。');
 })();
